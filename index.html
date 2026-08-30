@@ -1,24 +1,527 @@
-// ---------- highlight active nav tab ----------
-(function setActiveTab() {
-  const path = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.tab').forEach((tab) => {
-    if (tab.getAttribute('href') === path) {
-      tab.classList.add('active');
-    }
-  });
-})();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venkata Sai Charan S — Developer</title>
+<meta name="description" content="Portfolio of Venkata Sai Charan S, a student developer working with C, Python, DSA and web technologies.">
 
-// ---------- typing animation for hero terminal (home page only) ----------
+<style>
+/* =========================================================
+   Venkata Sai Charan S — Developer Portfolio (single page)
+   Palette:
+     --bg #0d0f0f  --surface #14181a  --surface-2 #1a1f22
+     --border #2a3134  --text #e7e5df  --muted #838d8f
+     --accent #ffb454 (amber)  --accent-2 #5fd4c0 (teal)
+   Type: 'JetBrains Mono' (code/labels), 'Space Grotesk' (body)
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #0d0f0f;
+  --surface: #14181a;
+  --surface-2: #1a1f22;
+  --border: #2a3134;
+  --text: #e7e5df;
+  --muted: #838d8f;
+  --accent: #ffb454;
+  --accent-2: #5fd4c0;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Space Grotesk', system-ui, sans-serif;
+  --header-h: 64px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,180,84,0.05), transparent 55%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, .tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1, h2, h3 { font-family: var(--sans); font-weight: 700; letter-spacing: -0.01em; margin: 0 0 0.5em; }
+code, .mono { font-family: var(--mono); }
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* header / tab bar (scrolls to sections) */
+header.termbar {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(13,15,15,0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.termbar-inner {
+  max-width: 880px; margin: 0 auto; padding: 0 24px; height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.brand { font-family: var(--mono); font-size: 15px; color: var(--text); white-space: nowrap; }
+.brand .prompt-user { color: var(--accent-2); }
+.brand .prompt-dollar { color: var(--muted); }
+
+nav.tabs {
+  display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 3px; overflow-x: auto;
+}
+.tab {
+  font-family: var(--mono); font-size: 13px; color: var(--muted); padding: 7px 14px;
+  border-radius: 5px; white-space: nowrap; transition: background 0.15s ease, color 0.15s ease;
+}
+.tab:hover { color: var(--text); text-decoration: none; background: rgba(255,255,255,0.04); }
+.tab.active { color: var(--bg); background: var(--accent); font-weight: 500; }
+.tab.active:hover { background: var(--accent); }
+
+/* terminal window chrome (signature element) */
+.terminal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+}
+.terminal-titlebar {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: var(--surface-2); border-bottom: 1px solid var(--border);
+}
+.dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #febc2e; }
+.dot.green { background: #28c840; }
+.terminal-titlebar .filename { margin-left: 8px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.terminal-body { padding: 22px 24px 26px; font-family: var(--mono); }
+
+.line { margin: 0 0 6px; }
+.line:last-child { margin-bottom: 0; }
+.prompt-sym { color: var(--accent-2); margin-right: 8px; }
+.out { color: var(--text); }
+.cursor {
+  display: inline-block; width: 9px; height: 1.05em; background: var(--accent);
+  vertical-align: text-bottom; margin-left: 4px; animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* hero */
+.hero { padding: 72px 0 40px; }
+.hero-eyebrow { font-family: var(--mono); color: var(--accent-2); font-size: 13px; margin-bottom: 14px; display: block; }
+.hero h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.08; margin-bottom: 18px; }
+.hero h1 .accent { color: var(--accent); }
+.hero-sub { color: var(--muted); font-size: 1.05rem; max-width: 60ch; margin: 0 0 32px; }
+.hero-cta { display: flex; gap: 14px; margin-bottom: 44px; flex-wrap: wrap; }
+
+.btn {
+  font-family: var(--mono); font-size: 14px; padding: 12px 20px; border-radius: 7px;
+  border: 1px solid var(--border); color: var(--text); display: inline-flex;
+  align-items: center; gap: 8px; cursor: pointer; background: transparent;
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.btn:hover { text-decoration: none; border-color: var(--accent); transform: translateY(-1px); }
+.btn.primary { background: var(--accent); color: #1a1206; border-color: var(--accent); font-weight: 500; }
+.btn.primary:hover { background: #ffc26e; }
+
+/* page/section structure */
+.page-head { padding: 56px 0 8px; }
+.page-head .hero-eyebrow { margin-bottom: 10px; }
+.page-head p.lede { color: var(--muted); max-width: 62ch; }
+section { padding: 40px 0; scroll-margin-top: calc(var(--header-h) + 16px); }
+section.tight { padding-top: 0; }
+
+.section-title {
+  font-family: var(--mono); font-size: 13px; color: var(--muted); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::before { content: ""; width: 22px; height: 1px; background: var(--border); display: inline-block; }
+
+/* skills */
+.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.skill-chip {
+  border: 1px solid var(--border); background: var(--surface); border-radius: 7px;
+  padding: 12px 14px; font-family: var(--mono); font-size: 13.5px; color: var(--text);
+  display: flex; align-items: center; gap: 10px;
+}
+.skill-chip .idx { color: var(--muted); }
+.skill-chip:hover { border-color: var(--accent-2); }
+
+/* about stats */
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin: 36px 0 8px; }
+.stat { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 18px; }
+.stat .num { font-family: var(--mono); font-size: 1.7rem; color: var(--accent); display: block; margin-bottom: 4px; }
+.stat .label { color: var(--muted); font-size: 13px; }
+
+.about-text {
+  margin-top: 14px; font-family: var(--sans); font-size: 15.5px; line-height: 1.75; color: var(--text);
+}
+.about-text + .about-text { margin-top: 14px; }
+
+/* project cards */
+.projects-list { display: flex; flex-direction: column; gap: 16px; }
+.project-card {
+  border: 1px solid var(--border); background: var(--surface); border-radius: 10px;
+  padding: 22px 24px; transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.project-card:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.project-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.project-head h3 { font-family: var(--mono); font-size: 1.05rem; color: var(--text); margin: 0; }
+.project-head h3 .path { color: var(--muted); font-weight: 400; }
+.project-tag {
+  font-family: var(--mono); font-size: 11.5px; color: var(--accent);
+  border: 1px solid rgba(255,180,84,0.35); border-radius: 20px; padding: 3px 10px; white-space: nowrap;
+}
+.project-desc { color: var(--muted); margin: 0 0 14px; font-size: 14.5px; }
+.project-stack { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.project-stack span {
+  font-family: var(--mono); font-size: 12px; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px;
+}
+.project-links { display: flex; gap: 18px; font-family: var(--mono); font-size: 13px; }
+.project-links a::before { content: "→ "; color: var(--accent-2); }
+
+/* contact */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+@media (max-width: 720px) { .contact-grid { grid-template-columns: 1fr; } }
+
+.contact-list { list-style: none; padding: 0; margin: 0; }
+.contact-list li {
+  border-bottom: 1px solid var(--border); padding: 14px 0; display: flex;
+  justify-content: space-between; gap: 12px; align-items: center; font-family: var(--mono); font-size: 14px;
+}
+.contact-list li:last-child { border-bottom: none; }
+.contact-list .k { color: var(--muted); }
+
+form.contact-form { display: flex; flex-direction: column; gap: 14px; }
+form.contact-form label { font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin-bottom: 6px; display: block; }
+form.contact-form input, form.contact-form textarea {
+  width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px;
+  padding: 11px 12px; color: var(--text); font-family: var(--sans); font-size: 14px;
+}
+form.contact-form input:focus, form.contact-form textarea:focus { border-color: var(--accent); outline: none; }
+form.contact-form textarea { resize: vertical; min-height: 110px; }
+.form-status { font-family: var(--mono); font-size: 13px; color: var(--accent-2); min-height: 1.4em; }
+
+.note { color: var(--muted); font-family: var(--mono); font-size: 13px; }
+
+/* footer */
+footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 26px 0 60px; }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+footer p { color: var(--muted); font-family: var(--mono); font-size: 12.5px; margin: 0; }
+.footer-links { display: flex; gap: 16px; font-family: var(--mono); font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<header class="termbar">
+  <div class="termbar-inner">
+    <div class="brand"><span class="prompt-user">venkat</span><span class="prompt-dollar">@portfolio</span><span class="prompt-dollar">:~$</span></div>
+    <nav class="tabs">
+      <a class="tab" data-section="home" href="#home">home.sh</a>
+      <a class="tab" data-section="about" href="#about">about.sh</a>
+      <a class="tab" data-section="projects" href="#projects">projects.sh</a>
+      <a class="tab" data-section="contact" href="#contact">contact.sh</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== HOME ===== -->
+  <section id="home" class="hero">
+    <span class="hero-eyebrow">// student developer</span>
+    <h1>Venkata Sai Charan <span class="accent">S.</span><br>Building things, one compile at a time.</h1>
+    <p class="hero-sub">
+      I'm a student developer learning C, Python, and web technologies —
+      currently focused on data structures, algorithm design, and shipping small
+      projects that actually run.
+    </p>
+
+    <div class="hero-cta">
+      <a class="btn primary" href="#projects">View projects</a>
+      <a class="btn" href="#contact">Get in touch</a>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-titlebar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">venkat@portfolio: ~</span>
+      </div>
+      <div class="terminal-body" id="hero-type" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <h2 class="section-title">/ what I work with</h2>
+    <div class="skill-grid">
+      <div class="skill-chip"><span class="idx">01</span> C</div>
+      <div class="skill-chip"><span class="idx">02</span> Python</div>
+      <div class="skill-chip"><span class="idx">03</span> DSA</div>
+      <div class="skill-chip"><span class="idx">04</span> DAA</div>
+      <div class="skill-chip"><span class="idx">05</span> HTML</div>
+      <div class="skill-chip"><span class="idx">06</span> CSS</div>
+      <div class="skill-chip"><span class="idx">07</span> JavaScript</div>
+      <div class="skill-chip"><span class="idx">08</span> Web Tech</div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about">
+    <div class="page-head" style="padding-top:16px;">
+      <span class="hero-eyebrow">// about.sh</span>
+      <h1>About me</h1>
+      <p class="lede">A short read on who I am, what I'm learning, and how I like to work.</p>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-titlebar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">about.txt</span>
+      </div>
+      <div class="terminal-body">
+        <p class="line"><span class="prompt-sym">~$</span>cat about.txt</p>
+        <p class="about-text">
+          I'm Venkata Sai Charan S, a student developer who enjoys figuring out how
+          things work by building them from scratch. Most of my time goes into
+          strengthening my fundamentals in Data Structures &amp; Algorithms (DSA)
+          and Design &amp; Analysis of Algorithms (DAA), alongside hands-on practice
+          in C and Python. On the side, I build small web projects using HTML,
+          CSS, and JavaScript to turn ideas into something people can actually
+          click through.
+        </p>
+        <p class="about-text">
+          I like clean, working code over clever, fragile code — and I'm always
+          looking for the next small project to learn something new from.
+        </p>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><span class="num">4+</span><span class="label">core languages / tools</span></div>
+      <div class="stat"><span class="num">3</span><span class="label">projects built</span></div>
+      <div class="stat"><span class="num">∞</span><span class="label">bugs fixed (and counting)</span></div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section id="projects">
+    <div class="page-head" style="padding-top:16px;">
+      <span class="hero-eyebrow">// projects.sh</span>
+      <h1>Projects</h1>
+      <p class="lede">A few things I've built while learning — from a full portfolio site to small, focused practice apps.</p>
+    </div>
+
+    <div class="terminal" style="margin-bottom:28px;">
+      <div class="terminal-titlebar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">projects/</span>
+      </div>
+      <div class="terminal-body">
+        <p class="line"><span class="prompt-sym">~$</span>ls projects/</p>
+        <p class="line out">portfolio-website/  todo-list-app/  simple-calculator/</p>
+      </div>
+    </div>
+
+    <div class="projects-list">
+
+      <article class="project-card">
+        <div class="project-head">
+          <h3>portfolio-website <span class="path">/ Personal Site</span></h3>
+          <span class="project-tag">Web</span>
+        </div>
+        <p class="project-desc">
+          My personal developer portfolio — this site. Built from scratch to
+          present my skills, projects, and contact details in one place, and
+          deployed as a live GitHub Pages site.
+        </p>
+        <div class="project-stack"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+        <div class="project-links">
+          <a href="https://sistlavenkatasaicharan2007-cmd.github.io/" target="_blank" rel="noopener">Live site</a>
+          <a href="https://github.com/sistlavenkatasaicharan2007-cmd/sistlavenkatasaicharan2007-cmd.github.io" target="_blank" rel="noopener">Source code</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-head">
+          <h3>todo-list-app <span class="path">/ Task Manager</span></h3>
+          <span class="project-tag">Beginner</span>
+        </div>
+        <p class="project-desc">
+          A simple to-do list app for adding, completing, and deleting tasks —
+          built to practice DOM manipulation and event handling in plain
+          JavaScript, with tasks saved locally in the browser.
+        </p>
+        <div class="project-stack"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+        <div class="project-links">
+          <a href="https://github.com/sistlavenkatasaicharan2007-cmd" target="_blank" rel="noopener">Source code</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-head">
+          <h3>simple-calculator <span class="path">/ Utility</span></h3>
+          <span class="project-tag">Beginner</span>
+        </div>
+        <p class="project-desc">
+          A basic calculator supporting addition, subtraction, multiplication,
+          and division — built to practice working with functions, operators,
+          and clean UI layout in a small, focused project.
+        </p>
+        <div class="project-stack"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+        <div class="project-links">
+          <a href="https://github.com/sistlavenkatasaicharan2007-cmd" target="_blank" rel="noopener">Source code</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact">
+    <div class="page-head" style="padding-top:16px;">
+      <span class="hero-eyebrow">// contact.sh</span>
+      <h1>Get in touch</h1>
+      <p class="lede">Have a project, an idea, or just want to say hi? Reach out — I read everything.</p>
+    </div>
+
+    <div class="contact-grid">
+
+      <div class="terminal">
+        <div class="terminal-titlebar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="filename">contact.txt</span>
+        </div>
+        <div class="terminal-body">
+          <p class="line"><span class="prompt-sym">~$</span>cat contact.txt</p>
+          <ul class="contact-list" style="margin-top:14px;">
+            <li><span class="k">email</span><a href="mailto:sistlavenkatasaicharan2007@gmail.com">sistlavenkatasaicharan2007@gmail.com</a></li>
+            <li><span class="k">phone</span><a href="tel:+919618865083">+91 96188 65083</a></li>
+            <li><span class="k">github</span><a href="https://github.com/sistlavenkatasaicharan2007-cmd" target="_blank" rel="noopener">sistlavenkatasaicharan2007-cmd</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-titlebar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="filename">send_message.sh</span>
+        </div>
+        <div class="terminal-body">
+          <form class="contact-form" id="contact-form">
+            <div>
+              <label for="name">your name</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+              <label for="email">your email</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+              <label for="message">message</label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="btn primary" style="align-self:flex-start;">Send message</button>
+            <p class="form-status" id="form-status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="note" style="margin-top:24px;">
+      // note: this form is front-end only. Wire it up to a form backend
+      (e.g. Formspree, EmailJS) or a server endpoint to actually receive
+      messages — for now, the fastest way to reach me is by email above.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>&copy; <span id="year"></span> Venkata Sai Charan S.</p>
+    <div class="footer-links">
+      <a href="mailto:sistlavenkatasaicharan2007@gmail.com">Email</a>
+      <a href="https://github.com/sistlavenkatasaicharan2007-cmd" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ---------- highlight active nav tab based on scroll position ---------- */
+const sections = ['home', 'about', 'projects', 'contact'].map(id => document.getElementById(id));
+const tabs = document.querySelectorAll('.tab');
+
+function setActiveTabByScroll() {
+  let currentId = sections[0].id;
+  const scrollPos = window.scrollY + 120;
+  sections.forEach(sec => {
+    if (sec.offsetTop <= scrollPos) currentId = sec.id;
+  });
+  tabs.forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.section === currentId);
+  });
+}
+window.addEventListener('scroll', setActiveTabByScroll);
+setActiveTabByScroll();
+
+/* ---------- typing animation for hero terminal ---------- */
+const heroLines = [
+  { prompt: '~$', text: 'whoami' },
+  { text: 'Venkata Sai Charan S — Developer', isOutput: true },
+  { prompt: '~$', text: 'cat status.txt' },
+  { text: 'Learning C, Python, DSA & DAA. Building with HTML/CSS/JS.', isOutput: true },
+  { prompt: '~$', text: 'echo $GOAL' },
+  { text: 'Write clean code, solve real problems, keep shipping.', isOutput: true },
+];
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function typeLines(elementId, lines, speed = 28, lineDelay = 350) {
   const el = document.getElementById(elementId);
   if (!el) return;
-
   el.innerHTML = '';
   let lineIndex = 0;
 
   function typeLine() {
     if (lineIndex >= lines.length) return;
-
     const { prompt, text, isOutput } = lines[lineIndex];
     const lineEl = document.createElement('p');
     lineEl.className = 'line';
@@ -36,7 +539,6 @@ function typeLines(elementId, lines, speed = 28, lineDelay = 350) {
     el.appendChild(lineEl);
 
     if (isOutput) {
-      // output lines render instantly, no keystroke animation
       textSpan.textContent = text;
       lineIndex += 1;
       window.setTimeout(typeLine, lineDelay);
@@ -61,38 +563,30 @@ function typeLines(elementId, lines, speed = 28, lineDelay = 350) {
     };
     typeChar();
   }
-
   typeLine();
 }
 
-// respect reduced-motion preference: render instantly instead of animating
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (prefersReducedMotion) {
+  const el = document.getElementById('hero-type');
+  el.innerHTML = heroLines
+    .map(l => `<p class="line">${l.prompt ? `<span class="prompt-sym">${l.prompt}</span>` : ''}<span class="${l.isOutput ? 'out' : ''}">${l.text}</span></p>`)
+    .join('');
+} else {
+  typeLines('hero-type', heroLines);
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const heroLines = window.__HERO_LINES__;
-  if (heroLines) {
-    if (prefersReducedMotion) {
-      const el = document.getElementById('hero-type');
-      if (el) {
-        el.innerHTML = heroLines
-          .map((l) => `<p class="line">${l.prompt ? `<span class="prompt-sym">${l.prompt}</span>` : ''}<span class="${l.isOutput ? 'out' : ''}">${l.text}</span></p>`)
-          .join('');
-      }
-    } else {
-      typeLines('hero-type', heroLines);
-    }
-  }
-
-  // ---------- contact form (front-end only demo) ----------
-  const form = document.getElementById('contact-form');
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const status = document.getElementById('form-status');
-      const name = form.querySelector('#name').value.trim();
-      if (!name) return;
-      status.textContent = `> message queued. thanks, ${name.split(' ')[0]} — I'll reply by email soon.`;
-      form.reset();
-    });
-  }
-});
+/* ---------- contact form (front-end only demo) ---------- */
+const form = document.getElementById('contact-form');
+if (form) {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const status = document.getElementById('form-status');
+    const name = form.querySelector('#name').value.trim();
+    if (!name) return;
+    status.textContent = `> message queued. thanks, ${name.split(' ')[0]} — I'll reply by email soon.`;
+    form.reset();
+  });
+}
+</script>
+</body>
+</html>
