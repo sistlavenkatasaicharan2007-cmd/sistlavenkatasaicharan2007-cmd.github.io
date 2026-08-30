@@ -1,0 +1,98 @@
+// ---------- highlight active nav tab ----------
+(function setActiveTab() {
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.tab').forEach((tab) => {
+    if (tab.getAttribute('href') === path) {
+      tab.classList.add('active');
+    }
+  });
+})();
+
+// ---------- typing animation for hero terminal (home page only) ----------
+function typeLines(elementId, lines, speed = 28, lineDelay = 350) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  el.innerHTML = '';
+  let lineIndex = 0;
+
+  function typeLine() {
+    if (lineIndex >= lines.length) return;
+
+    const { prompt, text, isOutput } = lines[lineIndex];
+    const lineEl = document.createElement('p');
+    lineEl.className = 'line';
+
+    if (prompt) {
+      const promptSpan = document.createElement('span');
+      promptSpan.className = 'prompt-sym';
+      promptSpan.textContent = prompt;
+      lineEl.appendChild(promptSpan);
+    }
+
+    const textSpan = document.createElement('span');
+    textSpan.className = isOutput ? 'out' : '';
+    lineEl.appendChild(textSpan);
+    el.appendChild(lineEl);
+
+    if (isOutput) {
+      // output lines render instantly, no keystroke animation
+      textSpan.textContent = text;
+      lineIndex += 1;
+      window.setTimeout(typeLine, lineDelay);
+      return;
+    }
+
+    let charIndex = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    lineEl.appendChild(cursor);
+
+    const typeChar = () => {
+      if (charIndex < text.length) {
+        textSpan.textContent += text.charAt(charIndex);
+        charIndex += 1;
+        window.setTimeout(typeChar, speed);
+      } else {
+        cursor.remove();
+        lineIndex += 1;
+        window.setTimeout(typeLine, lineDelay);
+      }
+    };
+    typeChar();
+  }
+
+  typeLine();
+}
+
+// respect reduced-motion preference: render instantly instead of animating
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const heroLines = window.__HERO_LINES__;
+  if (heroLines) {
+    if (prefersReducedMotion) {
+      const el = document.getElementById('hero-type');
+      if (el) {
+        el.innerHTML = heroLines
+          .map((l) => `<p class="line">${l.prompt ? `<span class="prompt-sym">${l.prompt}</span>` : ''}<span class="${l.isOutput ? 'out' : ''}">${l.text}</span></p>`)
+          .join('');
+      }
+    } else {
+      typeLines('hero-type', heroLines);
+    }
+  }
+
+  // ---------- contact form (front-end only demo) ----------
+  const form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const status = document.getElementById('form-status');
+      const name = form.querySelector('#name').value.trim();
+      if (!name) return;
+      status.textContent = `> message queued. thanks, ${name.split(' ')[0]} — I'll reply by email soon.`;
+      form.reset();
+    });
+  }
+});
