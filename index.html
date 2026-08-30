@@ -7,15 +7,6 @@
 <meta name="description" content="Portfolio of Venkata Sai Charan S, a student developer working with C, Python, DSA and web technologies.">
 
 <style>
-/* =========================================================
-   Venkata Sai Charan S — Developer Portfolio (single page)
-   Palette:
-     --bg #0d0f0f  --surface #14181a  --surface-2 #1a1f22
-     --border #2a3134  --text #e7e5df  --muted #838d8f
-     --accent #ffb454 (amber)  --accent-2 #5fd4c0 (teal)
-   Type: 'JetBrains Mono' (code/labels), 'Space Grotesk' (body)
-   ========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
@@ -87,7 +78,6 @@ code, .mono { font-family: var(--mono); }
 
 .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
-/* header / tab bar (scrolls to sections) */
 header.termbar {
   position: sticky; top: 0; z-index: 10;
   background: rgba(13,15,15,0.85);
@@ -114,7 +104,6 @@ nav.tabs {
 .tab.active { color: var(--bg); background: var(--accent); font-weight: 500; }
 .tab.active:hover { background: var(--accent); }
 
-/* terminal window chrome (signature element) */
 .terminal {
   background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
   overflow: hidden; box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
@@ -141,12 +130,36 @@ nav.tabs {
 @keyframes blink { 50% { opacity: 0; } }
 
 /* hero */
-.hero { padding: 72px 0 40px; }
+.hero { padding: 72px 0 40px; display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+.hero-copy { flex: 1 1 380px; min-width: 0; }
 .hero-eyebrow { font-family: var(--mono); color: var(--accent-2); font-size: 13px; margin-bottom: 14px; display: block; }
 .hero h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.08; margin-bottom: 18px; }
 .hero h1 .accent { color: var(--accent); }
 .hero-sub { color: var(--muted); font-size: 1.05rem; max-width: 60ch; margin: 0 0 32px; }
 .hero-cta { display: flex; gap: 14px; margin-bottom: 44px; flex-wrap: wrap; }
+
+.avatar-frame {
+  flex: 0 0 auto;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  margin: 0 auto;
+}
+.avatar-frame img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 3px solid var(--bg);
+}
+@media (max-width: 640px) {
+  .hero { flex-direction: column-reverse; align-items: center; text-align: center; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero-cta { justify-content: center; }
+}
 
 .btn {
   font-family: var(--mono); font-size: 14px; padding: 12px 20px; border-radius: 7px;
@@ -158,7 +171,6 @@ nav.tabs {
 .btn.primary { background: var(--accent); color: #1a1206; border-color: var(--accent); font-weight: 500; }
 .btn.primary:hover { background: #ffc26e; }
 
-/* page/section structure */
 .page-head { padding: 56px 0 8px; }
 .page-head .hero-eyebrow { margin-bottom: 10px; }
 .page-head p.lede { color: var(--muted); max-width: 62ch; }
@@ -171,7 +183,6 @@ section.tight { padding-top: 0; }
 }
 .section-title::before { content: ""; width: 22px; height: 1px; background: var(--border); display: inline-block; }
 
-/* skills */
 .skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .skill-chip {
   border: 1px solid var(--border); background: var(--surface); border-radius: 7px;
@@ -181,7 +192,6 @@ section.tight { padding-top: 0; }
 .skill-chip .idx { color: var(--muted); }
 .skill-chip:hover { border-color: var(--accent-2); }
 
-/* about stats */
 .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin: 36px 0 8px; }
 .stat { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 18px; }
 .stat .num { font-family: var(--mono); font-size: 1.7rem; color: var(--accent); display: block; margin-bottom: 4px; }
@@ -192,7 +202,6 @@ section.tight { padding-top: 0; }
 }
 .about-text + .about-text { margin-top: 14px; }
 
-/* project cards */
 .projects-list { display: flex; flex-direction: column; gap: 16px; }
 .project-card {
   border: 1px solid var(--border); background: var(--surface); border-radius: 10px;
@@ -215,7 +224,6 @@ section.tight { padding-top: 0; }
 .project-links { display: flex; gap: 18px; font-family: var(--mono); font-size: 13px; }
 .project-links a::before { content: "→ "; color: var(--accent-2); }
 
-/* contact */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 @media (max-width: 720px) { .contact-grid { grid-template-columns: 1fr; } }
 
@@ -239,7 +247,6 @@ form.contact-form textarea { resize: vertical; min-height: 110px; }
 
 .note { color: var(--muted); font-family: var(--mono); font-size: 13px; }
 
-/* footer */
 footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 26px 0 60px; }
 footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 footer p { color: var(--muted); font-family: var(--mono); font-size: 12.5px; margin: 0; }
@@ -264,20 +271,26 @@ footer p { color: var(--muted); font-family: var(--mono); font-size: 12.5px; mar
 
   <!-- ===== HOME ===== -->
   <section id="home" class="hero">
-    <span class="hero-eyebrow">// student developer</span>
-    <h1>Venkata Sai Charan <span class="accent">S.</span><br>Building things, one compile at a time.</h1>
-    <p class="hero-sub">
-      I'm a student developer learning C, Python, and web technologies —
-      currently focused on data structures, algorithm design, and shipping small
-      projects that actually run.
-    </p>
+    <div class="hero-copy">
+      <span class="hero-eyebrow">// student developer</span>
+      <h1>Venkata Sai Charan <span class="accent">S.</span><br>Building things, one compile at a time.</h1>
+      <p class="hero-sub">
+        I'm a student developer learning C, Python, and web technologies —
+        currently focused on data structures, algorithm design, and shipping small
+        projects that actually run.
+      </p>
 
-    <div class="hero-cta">
-      <a class="btn primary" href="#projects">View projects</a>
-      <a class="btn" href="#contact">Get in touch</a>
+      <div class="hero-cta">
+        <a class="btn primary" href="#projects">View projects</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
     </div>
 
-    <div class="terminal">
+    <div class="avatar-frame">
+      <img src="profile.jpg" alt="Venkata Sai Charan S">
+    </div>
+
+    <div class="terminal" style="flex-basis: 100%;">
       <div class="terminal-titlebar">
         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
         <span class="filename">venkat@portfolio: ~</span>
@@ -485,7 +498,6 @@ footer p { color: var(--muted); font-family: var(--mono); font-size: 12.5px; mar
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ---------- highlight active nav tab based on scroll position ---------- */
 const sections = ['home', 'about', 'projects', 'contact'].map(id => document.getElementById(id));
 const tabs = document.querySelectorAll('.tab');
 
@@ -502,7 +514,6 @@ function setActiveTabByScroll() {
 window.addEventListener('scroll', setActiveTabByScroll);
 setActiveTabByScroll();
 
-/* ---------- typing animation for hero terminal ---------- */
 const heroLines = [
   { prompt: '~$', text: 'whoami' },
   { text: 'Venkata Sai Charan S — Developer', isOutput: true },
@@ -575,7 +586,6 @@ if (prefersReducedMotion) {
   typeLines('hero-type', heroLines);
 }
 
-/* ---------- contact form (front-end only demo) ---------- */
 const form = document.getElementById('contact-form');
 if (form) {
   form.addEventListener('submit', (e) => {
